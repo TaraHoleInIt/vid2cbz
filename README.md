@@ -18,7 +18,7 @@ pip install -r requirements.txt
 To convert a video to a CBZ file, run the following command in your terminal:
 
 ```bash
-python vid2cbz.py --input <input_video> --output <output_cbz> --font <font> --font-size <font_size> 
+python vid2cbz.py --input <input_video> --srt <input_subtitles> --output <output_cbz> --font <font> --font-size <font_size> 
 --stroke-color <stroke_color> --text-color <text_color> --background-color <background_color> --rotate 
 <rotate_angle> --size <output_size>
 ```
@@ -26,14 +26,15 @@ python vid2cbz.py --input <input_video> --output <output_cbz> --font <font> --fo
 Replace the placeholders with your desired values:
 
 - `<input_video>`: Path to the input video file.
-- `<output_cbz>`: Output CBZ archive name and path.
-- `<font>`: Font for subtitle text (default is Arial).
-- `<font_size>`: Font size in points (default is 48).
-- `<stroke_color>`: Subtitle stroke color (default is black).
-- `<text_color>`: Subtitle fill color (default is white).
-- `<background_color>`: Subtitle background color (default is rgba(0,0,0,0.5)).
-- `<rotate_angle>`: Rotate the final image by this angle (default is 0 degrees).
-- `<output_size>`: Scale the final image to this size (AFTER rotation; passed to ImageMagick as -resize; use ImageMagick size formatting).
+- `<input_subtitles>`: Path to subtitles file; optional if video has embedded subtitles.
+- `<output_cbz>`: (OPTIONAL) Output CBZ archive name and path.
+- `<font>`: (OPTIONAL) Font for subtitle text (default is Arial).
+- `<font_size>`: (OPTIONAL) Font size in points (default is 48).
+- `<stroke_color>`: (OPTIONAL) Subtitle stroke color (default is black).
+- `<text_color>`: (OPTIONAL) Subtitle fill color (default is white).
+- `<background_color>`: (OPTIONAL) Subtitle background color (default is rgba(0,0,0,0.5)).
+- `<rotate_angle>`: (OPTIONAL) Rotate the final image by this angle (default is 0 degrees).
+- `<output_size>`: (OPTIONAL) Scale the final image to this size (AFTER rotation; passed to ImageMagick as -resize; use ImageMagick size formatting).
 
 You can optionally include these flags to customize your output:
 
