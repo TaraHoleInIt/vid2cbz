@@ -137,6 +137,7 @@ def draw_subtitle(
         ")",
         "-composite",
         "-rotate", str(args["rotate"]),
+        "-resize", args["size"],
         output_path
     ], input=image_content)
 
@@ -164,7 +165,7 @@ def zip_output_dir(args, images_dir):
 
 
 def remove_temporary_files():
-    temp_path = Path("./temp").resolve()
+    temp_path = Path("./temp-vid2cbz").resolve()
 
     try:
         if temp_path.exists() and temp_path.is_dir():
@@ -229,7 +230,8 @@ def handle_command_line():
     parser.add_argument("--reencode-fast", help="Re-encodes input to a temporary file for faster processing. Uses lots of disk space.", action="store_true")
     parser.add_argument("--output", help="Output CBZ archive")
     parser.add_argument("--format", help="Output image format (default is PNG)")
-
+    parser.add_argument("--size", help="Output image size AFTER ROTATION (ImageMagick -resize syntax; optional; defaults to 100%)")
+    
     args = parser.parse_args()
 
     result["input"] = args.input
@@ -247,6 +249,7 @@ def handle_command_line():
     result["reencode_fast"] = args.reencode_fast
     result["list_languages"] = args.list_languages
     result["list_fonts"] = args.list_fonts
+    result["size"] = "100%" if args.size is None else args.size
 
     if args.list_fonts is True:
         print("Listing fonts:")
@@ -329,14 +332,14 @@ if __name__ == "__main__":
     subtitles = get_subtitles(args)
     res = get_video_resolution(args["input"])
 
-    temp_path = Path("./temp").resolve()
+    temp_path = Path("./temp-vid2cbz").resolve()
     temp_path.mkdir(exist_ok=True)
 
     for i in subtitles:
         frame = extract_frame(args["input"], str(i.start))
 
         if frame:
-            out_file = Path(f"temp/{frame_counter:06d}.{args['format']}")
+            out_file = Path(f"temp-vid2cbz/{frame_counter:06d}.{args['format']}")
             out_content = parse_content(i.content)
 
             update_progress(int((sub_index / len(subtitles)) * 100.0), args)

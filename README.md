@@ -20,7 +20,7 @@ To convert a video to a CBZ file, run the following command in your terminal:
 ```bash
 python vid2cbz.py --input <input_video> --output <output_cbz> --font <font> --font-size <font_size> 
 --stroke-color <stroke_color> --text-color <text_color> --background-color <background_color> --rotate 
-<rotate_angle>
+<rotate_angle> --size <output_size>
 ```
 
 Replace the placeholders with your desired values:
@@ -33,6 +33,7 @@ Replace the placeholders with your desired values:
 - `<text_color>`: Subtitle fill color (default is white).
 - `<background_color>`: Subtitle background color (default is rgba(0,0,0,0.5)).
 - `<rotate_angle>`: Rotate the final image by this angle (default is 0 degrees).
+- `<output_size>`: Scale the final image to this size (AFTER rotation; passed to ImageMagick as -resize; use ImageMagick size formatting).
 
 You can optionally include these flags to customize your output:
 
@@ -43,7 +44,7 @@ You can optionally include these flags to customize your output:
 For more details about each flag, run:
 
 ```bash
-python video_to_cbz.py --help
+python vid2cbz.py --help
 ```
 
 ## License
