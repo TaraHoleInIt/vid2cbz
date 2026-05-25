@@ -18,7 +18,7 @@ pip install -r requirements.txt
 To convert a video to a CBZ file, run the following command in your terminal:
 
 ```bash
-python video_to_cbz.py --input <input_video> --output <output_cbz> --font <font> --font-size <font_size> 
+python vid2cbz.py --input <input_video> --output <output_cbz> --font <font> --font-size <font_size> 
 --stroke-color <stroke_color> --text-color <text_color> --background-color <background_color> --rotate 
 <rotate_angle>
 ```
