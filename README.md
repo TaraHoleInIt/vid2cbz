@@ -20,7 +20,7 @@ To convert a video to a CBZ file, run the following command in your terminal:
 ```bash
 python vid2cbz.py --input <input_video> --srt <input_subtitles> --output <output_cbz> --font <font> --font-size <font_size> 
 --stroke-color <stroke_color> --text-color <text_color> --background-color <background_color> --rotate 
-<rotate_angle> --size <output_size>
+<rotate_angle> --size <output_size> --sub-seek <seek_pos> --ffmpeg-video-filter <filters>
 ```
 
 Replace the placeholders with your desired values:
@@ -35,6 +35,9 @@ Replace the placeholders with your desired values:
 - `<background_color>`: (OPTIONAL) Subtitle background color (default is rgba(0,0,0,0.5)).
 - `<rotate_angle>`: (OPTIONAL) Rotate the final image by this angle (default is 0 degrees).
 - `<output_size>`: (OPTIONAL) Scale the final image to this size (AFTER rotation; passed to ImageMagick as -resize; use ImageMagick size formatting).
+- `<seek_pos>`: (OPTIONAL) Where to seek within the subtitle range; values are: start, mid, and end.
+- `<filters>`: (OPTIONAL) Filters passed to -vf parameter in ffmpeg during frame extraction.
+
 
 You can optionally include these flags to customize your output:
 

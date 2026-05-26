@@ -70,17 +70,27 @@ def parse_content(in_content: str):
     return temp
 
 
-def extract_frame(video_path: str, time_offset: str):
-    result = subprocess.run([
+def extract_frame(args, time_offset: str):
+    command_list = [
         "ffmpeg",
         "-y",
         "-ss", time_offset,
-        "-i", video_path,
+        "-i", args["input"]      
+    ]
+
+    if args["ffmpeg_video_filter"] is not None:
+        command_list += [
+            "-vf", args["ffmpeg_video_filter"]
+        ]
+
+    command_list += [
         "-frames:v", "1",
         "-f", "image2pipe",
         "-vcodec", "png",
-        "/dev/stdout"
-    ], capture_output=True, text=False)
+        "/dev/stdout"       
+    ]
+
+    result = subprocess.run(command_list, capture_output=True, text=False)
 
     if result.returncode != 0:
         error_exit(f"Failed to extract frame at offset: {time_offset}")
@@ -88,7 +98,7 @@ def extract_frame(video_path: str, time_offset: str):
     return result.stdout
 
 
-def get_video_resolution(video_path: str):
+def old_get_video_resolution(video_path: str):
     result = subprocess.run([
         "ffprobe",
         "-show_entries", "stream=width,height",
@@ -107,6 +117,30 @@ def get_video_resolution(video_path: str):
         error_exit("Failed to parse video resolution")
 
     return int(res[0]), int(res[1])
+
+
+def get_video_resolution(args):
+    first_frame = extract_frame(args, "0")
+
+    if first_frame:
+        result = subprocess.run([
+            "ffprobe",
+            "-show_entries", "stream=width,height",
+            "-select_streams", "v:0",
+            "-of", "csv=p=0",
+            "pipe:0"
+        ], input=first_frame, capture_output=True)
+
+        if result.returncode != 0:
+            error_exit("Failed to get video resolution")
+
+        res_str = result.stdout.decode("utf-8").strip()
+        res = res_str.split(",")
+
+        if res is None:
+            error_exit("Failed to parse video resolution")
+
+        return int(res[0]), int(res[1])
 
 
 def draw_subtitle(
@@ -231,7 +265,9 @@ def handle_command_line():
     parser.add_argument("--output", help="Output CBZ archive")
     parser.add_argument("--format", help="Output image format (default is PNG)")
     parser.add_argument("--size", help="Output image size AFTER ROTATION (ImageMagick -resize syntax; optional; defaults to 100%%)")
-    
+    parser.add_argument("--sub-seek", help="Seeks to <position> within the subtitle time range where position is one of: start, mid, end")
+    parser.add_argument("--ffmpeg-video-filter", help="Passes <filter> to ffmpeg during subtitle extraction; encapsulate in quotes.")
+
     args = parser.parse_args()
 
     result["input"] = args.input
@@ -250,6 +286,8 @@ def handle_command_line():
     result["list_languages"] = args.list_languages
     result["list_fonts"] = args.list_fonts
     result["size"] = "100%" if args.size is None else args.size
+    result["sub_seek"] = "start" if args.sub_seek is None else args.sub_seek
+    result["ffmpeg_video_filter"] = args.ffmpeg_video_filter
 
     if args.list_fonts is True:
         print("Listing fonts:")
@@ -330,13 +368,20 @@ if __name__ == "__main__":
         args["input"] = "temp.mkv"
 
     subtitles = get_subtitles(args)
-    res = get_video_resolution(args["input"])
+    res = get_video_resolution(args)
 
     temp_path = Path("./temp-vid2cbz").resolve()
     temp_path.mkdir(exist_ok=True)
 
     for i in subtitles:
-        frame = extract_frame(args["input"], str(i.start))
+        seek_pos = i.start
+
+        if args["sub_seek"] == "mid":
+            seek_pos = (i.end - i.start) / 2
+        elif args["sub_seek"] == "end":
+            seek_pos = i.end
+
+        frame = extract_frame(args, str(seek_pos))
 
         if frame:
             out_file = Path(f"temp-vid2cbz/{frame_counter:06d}.{args['format']}")
