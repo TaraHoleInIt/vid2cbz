@@ -230,7 +230,7 @@ def handle_command_line():
     parser.add_argument("--reencode-fast", help="Re-encodes input to a temporary file for faster processing. Uses lots of disk space.", action="store_true")
     parser.add_argument("--output", help="Output CBZ archive")
     parser.add_argument("--format", help="Output image format (default is PNG)")
-    parser.add_argument("--size", help="Output image size AFTER ROTATION (ImageMagick -resize syntax; optional; defaults to 100%)")
+    parser.add_argument("--size", help="Output image size AFTER ROTATION (ImageMagick -resize syntax; optional; defaults to 100%%)")
     
     args = parser.parse_args()
 
